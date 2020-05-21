@@ -2,6 +2,8 @@ package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import web.dao.ImplUserDao;
 import web.dao.UserDao;
@@ -26,12 +28,10 @@ public class ImplUsersService implements UsersService{
         return implUserDao.getAllUsers();
     }
 
-
     @Override
     public void deleteUser(int id) {
         implUserDao.deleteUser(id);
     }
-
 
     @Override
     public void updateUser(User user) {

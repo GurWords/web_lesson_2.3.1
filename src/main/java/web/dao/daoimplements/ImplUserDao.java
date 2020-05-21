@@ -2,10 +2,10 @@ package web.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.TransactionManager;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
 
@@ -21,43 +21,38 @@ public class ImplUserDao implements UserDao{
     @Autowired
     SessionFactory sessionFactory;
 
-
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     @Override
     public User getUserById(int id) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         TypedQuery<User> query = session.createQuery("from User where id = :id");
         query.setParameter("id",id);
         User user = query.getSingleResult();
-        session.close();
         return user;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     @Override
     public List<User> getAllUsers() {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         List<User> userList =session.createQuery("from User").list();
-        session.close();
         return userList;
     }
 
 
-
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     @Override
     public void deleteUser(int id) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery("DELETE FROM User WHERE id = :id");
         query.setParameter("id",id);
         query.executeUpdate();
-        transaction.commit();
-        session.close();
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     @Override
     public void updateUser(User user) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
+        Session session = sessionFactory.getCurrentSession();
         Query query =session.createQuery("UPDATE User set name=:name,age = :age,password=:password,role=:role where id=:id");
         query.setParameter("name",user.getName());
         query.setParameter("age", user.getAge());
@@ -65,15 +60,12 @@ public class ImplUserDao implements UserDao{
         query.setParameter("role",user.getRole());
         query.setParameter("id",user.getId());
         query.executeUpdate();
-        transaction.commit();
-        session.close();
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT)
     @Override
     public void insertUser(User user) {
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
         session.save(user);
-        session.close();
     }
 }
